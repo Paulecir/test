@@ -1,0 +1,25 @@
+services:
+  proxy:
+    build: .
+    container_name: mitmproxy_delay
+    networks:
+      custom_net:
+        ipv4_address: 172.28.0.10
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./scripts:/app/scripts
+      - ./certs:/root/.mitmproxy
+      - ./logs:/app/logs
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    restart: unless-stopped
+    command: ["mitmdump", "-s", "scripts/proxy_with_order_intercept.py"]
+
+networks:
+  custom_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
